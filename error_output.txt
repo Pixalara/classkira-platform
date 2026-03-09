@@ -1,0 +1,24 @@
+
+   INFO  Clearing cached bootstrap files.  
+
+  events ........................................................... 29ms DONE
+  views ............................................................. 0ms FAIL
+
+   RuntimeException 
+
+  View path not found.
+
+  at vendor/laravel/framework/src/Illuminate/Foundation/Console/ViewClearCommand.php:70
+     66▕     {
+     67▕         $path = $this->laravel['config']['view.compiled'];
+     68▕ 
+     69▕         if (! $path) {
+  ➜  70▕             throw new RuntimeException('View path not found.');
+     71▕         }
+     72▕ 
+     73▕         $this->laravel['view.engine.resolver']
+     74▕             ->resolve('blade')
+
+      [2m+29 vendor frames [22m
+  30  artisan:37
+      Illuminate\Foundation\Console\Kernel::handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))

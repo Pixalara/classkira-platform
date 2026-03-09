@@ -1,14 +1,8 @@
 #!/bin/bash
 set -e
 
-# Wait for database to be ready
-echo "Waiting for database..."
-until php artisan db:show 2>/dev/null; do
-  echo "Database is unavailable - sleeping"
-  sleep 2
-done
-
-echo "Database is up"
+# Database is guaranteed to be up by docker-compose depends_on healthcheck
+echo "Database is ready (managed by docker-compose)"
 
 # Generate app key if not set
 php artisan key:generate --force 2>/dev/null || true
