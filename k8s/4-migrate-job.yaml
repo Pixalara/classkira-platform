@@ -1,0 +1,61 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: classkira-migrate
+  namespace: default
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox:1.35
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for MySQL..."
+              until nc -z mysql-service 3306; do
+                echo "MySQL not ready yet, retrying in 5s..."
+                sleep 5
+              done
+              echo "MySQL is ready!"
+      containers:
+        - name: migrate
+          image: asia-south1-docker.pkg.dev/classkira-platform/lms-repo/classkira-app:v1
+          command:
+            - sh
+            - -c
+            - |
+              echo "==> Generating app key if needed..."
+              php artisan key:generate --force 2>/dev/null || true
+
+              echo "==> Running database migrations..."
+              php artisan migrate --force
+
+              echo "==> Creating session table..."
+              php artisan session:table 2>/dev/null || true
+              php artisan migrate --force
+
+              echo "==> Checking if database needs seeding..."
+              SEEDED=$(php artisan tinker --execute="echo \DB::table('global_settings')->count();" 2>/dev/null || echo "0")
+              if [ "$SEEDED" = "0" ]; then
+                echo "==> Seeding database..."
+                php artisan db:seed --force
+                echo "==> Seeding complete!"
+              else
+                echo "==> Database already seeded, skipping."
+              fi
+
+              echo "==> Migration job complete!"
+          envFrom:
+            - secretRef:
+                name: classkira-secrets
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
