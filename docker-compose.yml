@@ -8,9 +8,14 @@ services:
     ports:
       - "8080:80"
     environment:
+<<<<<<< HEAD
       - APP_NAME=ClassKira
       - APP_ENV=production
       - APP_DEBUG=false
+=======
+      - APP_ENV=local
+      - APP_DEBUG=true
+>>>>>>> 288ed07856be2ef0e141ca0ae1c4324aea376035
       - APP_URL=http://localhost:8080
       - LOG_CHANNEL=stderr
       - DB_CONNECTION=mysql

@@ -75,8 +75,13 @@ RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
 
 # Copy and configure entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/
+<<<<<<< HEAD
 RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh \
     && chmod +x /usr/local/bin/docker-entrypoint.sh
+=======
+RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh && \
+    chmod +x /usr/local/bin/docker-entrypoint.sh
+>>>>>>> 288ed07856be2ef0e141ca0ae1c4324aea376035
 
 EXPOSE 80
 
