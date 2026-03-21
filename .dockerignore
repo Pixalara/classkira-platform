@@ -17,3 +17,5 @@ yarn-error.log
 Dockerfile
 docker-compose*.yml
 *.md
+/bootstrap/cache/*.php
+

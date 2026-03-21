@@ -1,25 +1,50 @@
 #!/bin/bash
 set -e
 
-# Wait for database to be ready
-echo "Waiting for database..."
-until php artisan db:show 2>/dev/null; do
-  echo "Database is unavailable - sleeping"
-  sleep 2
+# Wait for Cloud SQL to be reachable
+echo "Waiting for database connection..."
+until php -r "
+try {
+    \$pdo = new PDO(
+        'mysql:host=' . getenv('DB_HOST') . ';port=' . getenv('DB_PORT') . ';dbname=' . getenv('DB_DATABASE'),
+        getenv('DB_USERNAME'),
+        getenv('DB_PASSWORD'),
+        [PDO::ATTR_TIMEOUT => 3]
+    );
+    echo 'connected';
+} catch (Exception \$e) {
+    echo 'waiting';
+}
+" 2>/dev/null | grep -q "connected"; do
+    echo "Database not ready yet, retrying in 3s..."
+    sleep 3
 done
+echo "Database is ready!"
 
-echo "Database is up"
+# Create required Laravel storage directories
+echo "==> Creating storage directories..."
+mkdir -p /var/www/html/storage/framework/views
+mkdir -p /var/www/html/storage/framework/cache
+mkdir -p /var/www/html/storage/framework/sessions
+mkdir -p /var/www/html/storage/app/public
+mkdir -p /var/www/html/storage/logs
+mkdir -p /var/www/html/bootstrap/cache
 
-# Generate app key if not set
+# Set storage permissions
+echo "==> Setting storage permissions..."
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Generate app key if not already set
+echo "==> Generating app key if not set..."
 php artisan key:generate --force 2>/dev/null || true
 
-# Run database seed only on first run (when global_settings table doesn't exist)
-DB_STATUS=$(php check-db-seeded.php 2>/dev/null || echo "empty")
-if [ "$DB_STATUS" = "empty" ]; then
-  echo "Initializing database..."
-  php artisan db:seed --force
-  echo "Database initialized."
-fi
+# Clear old cache and rebuild for production
+echo "==> Caching config, routes and views..."
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
-echo "Starting Apache"
+echo "==> Starting Apache..."
 exec apache2-foreground

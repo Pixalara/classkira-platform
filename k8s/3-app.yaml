@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: classkira-app
+  namespace: default
+  labels:
+    app: classkira-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: classkira-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: classkira-app
+    spec:
+      initContainers:
+        # Wait for Cloud SQL to be reachable before starting Apache
+        - name: wait-for-db
+          image: busybox:1.35
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for Cloud SQL at 34.47.211.129:3306..."
+              until nc -z 34.47.211.129 3306; do
+                echo "Cloud SQL not ready, retrying in 5s..."
+                sleep 5
+              done
+              echo "Cloud SQL is reachable!"
+
+      containers:
+        - name: classkira
+          image: asia-south1-docker.pkg.dev/classkira-platform/lms-repo/classkira-app:v1
+          ports:
+            - containerPort: 80
+
+          # Load all environment variables from Kubernetes secret
+          envFrom:
+            - secretRef:
+                name: classkira-secrets
+
+          # Persistent storage for user uploads and generated PDFs
+          volumeMounts:
+            - name: laravel-storage
+              mountPath: /var/www/html/storage/app
+              subPath: app
+
+          # Resource limits for e2-small nodes (2GB RAM)
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+
+          # Readiness probe — pod only receives traffic when app responds
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+
+          # Liveness probe — restart pod if app stops responding
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 3
+
+      volumes:
+        - name: laravel-storage
+          persistentVolumeClaim:
+            claimName: laravel-storage-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: classkira-service
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: classkira-app
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
