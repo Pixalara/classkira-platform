@@ -37,7 +37,7 @@ spec:
 
       containers:
         - name: classkira
-          image: asia-south1-docker.pkg.dev/classkira-platform/lms-repo/classkira-app:v1
+          image: asia-south1-docker.pkg.dev/classkira-platform/lms-repo/classkira-app:v4
           ports:
             - containerPort: 80
 
@@ -52,7 +52,7 @@ spec:
               mountPath: /var/www/html/storage/app
               subPath: app
 
-          # Resource limits for e2-small nodes (2GB RAM)
+          # Resource limits for e2-small nodes
           resources:
             requests:
               memory: "128Mi"
@@ -61,7 +61,7 @@ spec:
               memory: "256Mi"
               cpu: "250m"
 
-          # Readiness probe — pod only receives traffic when app responds
+          # Readiness probe
           readinessProbe:
             httpGet:
               path: /
@@ -70,7 +70,7 @@ spec:
             periodSeconds: 10
             failureThreshold: 3
 
-          # Liveness probe — restart pod if app stops responding
+          # Liveness probe
           livenessProbe:
             httpGet:
               path: /
@@ -92,6 +92,7 @@ metadata:
   namespace: default
 spec:
   type: LoadBalancer
+  loadBalancerIP: "34.93.76.235"
   selector:
     app: classkira-app
   ports:
