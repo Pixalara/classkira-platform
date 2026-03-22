@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-<<<<<<< HEAD
 # Wait for Cloud SQL to be reachable
 echo "Waiting for database connection..."
 until php -r "
@@ -30,10 +29,6 @@ mkdir -p /var/www/html/storage/framework/sessions
 mkdir -p /var/www/html/storage/app/public
 mkdir -p /var/www/html/storage/logs
 mkdir -p /var/www/html/bootstrap/cache
-=======
-# Database is guaranteed to be up by docker-compose depends_on healthcheck
-echo "Database is ready (managed by docker-compose)"
->>>>>>> 288ed07856be2ef0e141ca0ae1c4324aea376035
 
 # Set storage permissions
 echo "==> Setting storage permissions..."

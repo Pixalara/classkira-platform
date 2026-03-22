@@ -32,9 +32,9 @@ RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     ServerName localhost\n\
     <Directory /var/www/html/public>\n\
+        Options FollowSymLinks\n\
         AllowOverride All\n\
         Require all granted\n\
-        Options -Indexes\n\
     </Directory>\n\
     ErrorLog ${APACHE_LOG_DIR}/error.log\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
@@ -45,7 +45,7 @@ COPY . .
 RUN rm -f bootstrap/cache/*.php
 
 # Create minimal .env if not present
-# All real values are injected via Kubernetes Secrets at runtime
+# All real values are injected via environment variables at runtime
 RUN if [ ! -f .env ]; then \
     echo "APP_NAME=ClassKira" > .env && \
     echo "APP_ENV=production" >> .env && \
@@ -75,13 +75,8 @@ RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
 
 # Copy and configure entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/
-<<<<<<< HEAD
 RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh \
     && chmod +x /usr/local/bin/docker-entrypoint.sh
-=======
-RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh && \
-    chmod +x /usr/local/bin/docker-entrypoint.sh
->>>>>>> 288ed07856be2ef0e141ca0ae1c4324aea376035
 
 EXPOSE 80
 
