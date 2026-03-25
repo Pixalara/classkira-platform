@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.4-apache
 
 # Install system dependencies
 # Note: default-mysql-client removed — database is Cloud SQL (external)

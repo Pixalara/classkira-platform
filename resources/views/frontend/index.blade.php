@@ -13,11 +13,17 @@
 
 <body data-bs-spy="scroll" data-bs-target=".header-area" data-bs-offset="50" tabindex="0">
 
+    @include('frontend.header')
+
     @yield('content')
+
+    @include('frontend.footer')
 
     @include('external_plugin')
     
     @include('frontend.include_buttom')
     
+    @include('components.register-modal')
+    <script src="{{ asset('js/classkira-ui.js') }}"></script>
 </body>
 </html>

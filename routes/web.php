@@ -48,6 +48,16 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/', 'home')->name('landingPage');
     Route::post('school/create', 'schoolCreate')->name('school.create');
     Route::get('web_redirect_to_pay_fee', 'webRedirectToPayFee')->name('webRedirectToPayFee');
+
+    // Static Legal Pages
+    Route::get('/privacy-policy', function () {
+        return view('privacy-policy');
+    })->name('privacy.policy');
+
+    Route::get('/terms', function () {
+        return view('terms-and-conditions');
+    })->name('terms');
+
 });
 
 // Account Disable Route

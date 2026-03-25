@@ -11,6 +11,10 @@
   <meta content="" name="author" />
   <!-- all the css files -->
   <link rel="shortcut icon" href="{{ asset('assets/uploads/logo/'.get_settings('favicon')) }}" />
+  <!-- Google Fonts: Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/bootstrap-5.1.3/css/bootstrap.min.css') }}">
 
@@ -18,6 +22,8 @@
   <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/main.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/ui-enhancements.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('frontend/assets/css/frontend-redesign.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ asset('css/classkira-redesign.css') }}">
 
   <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/bootstrap-icons-1.8.1/bootstrap-icons.css') }}">
 
@@ -86,5 +92,7 @@
                 toastr.warning("{{ session('warning') }}");
         @endif
     </script>
+
+    @include('components.register-modal')
 </body>
 </html>
