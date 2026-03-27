@@ -1,0 +1,49 @@
+# ── GKE Ingress ───────────────────────────────────────────────────────
+# Handles SSL termination + HTTP→HTTPS redirect + routing
+# Requires a GLOBAL static IP (not regional)
+#
+# BEFORE APPLYING:
+# 1. Create global IP:
+#    gcloud compute addresses create classkira-global-ip --global --ip-version IPV4
+# 2. Get the new IP:
+#    gcloud compute addresses describe classkira-global-ip --global
+# 3. Update DNS A records at your registrar:
+#    classkira.com     → <new global IP>
+#    www.classkira.com → <new global IP>
+# ─────────────────────────────────────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: classkira-ingress
+  namespace: default
+  annotations:
+    # Attach the managed SSL certificate
+    networking.gke.io/managed-certificates: classkira-ssl
+    # Use the global static IP (must be GLOBAL not regional)
+    kubernetes.io/ingress.global-static-ip-name: classkira-global-ip
+    # Attach HTTP→HTTPS redirect config
+    networking.gke.io/v1beta1.FrontendConfig: classkira-frontend-config
+    # Use GCE ingress class
+    kubernetes.io/ingress.class: "gce"
+spec:
+  rules:
+    - host: classkira.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: classkira-service
+                port:
+                  number: 80
+    - host: www.classkira.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: classkira-service
+                port:
+                  number: 80

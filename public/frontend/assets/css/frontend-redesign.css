@@ -127,8 +127,15 @@ a:hover {
   white-space: nowrap !important;
 }
 
-.signUp-btn:hover {
-  background-color: var(--color-body-bg) !important;
+/* Fix Sign In link hover visibility */
+.signUp-btn:hover,
+.navbar .sign-in-link:hover,
+.navbar a.sign-in:hover,
+nav a[href*="login"]:hover {
+  color: var(--color-primary) !important;   /* Teal #0DA896 */
+  background-color: transparent !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 /* NAVBAR button sizing overrides — keep all buttons on 1 line */

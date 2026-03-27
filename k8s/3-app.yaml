@@ -11,10 +11,7 @@ spec:
     matchLabels:
       app: classkira-app
   strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
+    type: Recreate
   template:
     metadata:
       labels:
@@ -37,7 +34,7 @@ spec:
 
       containers:
         - name: classkira
-          image: asia-south1-docker.pkg.dev/classkira-platform/lms-repo/classkira-app:v4
+          image: asia-south1-docker.pkg.dev/classkira-platform/lms-repo/classkira-app:v7
           ports:
             - containerPort: 80
 
@@ -52,7 +49,7 @@ spec:
               mountPath: /var/www/html/storage/app
               subPath: app
 
-          # Resource limits for e2-small nodes
+          # Resource limits
           resources:
             requests:
               memory: "128Mi"
@@ -85,14 +82,16 @@ spec:
             claimName: laravel-storage-pvc
 
 ---
+# ── Service ──────────────────────────────────────────────────────────
+# Changed from LoadBalancer to NodePort
+# GKE Ingress requires NodePort — traffic now flows through Ingress
 apiVersion: v1
 kind: Service
 metadata:
   name: classkira-service
   namespace: default
 spec:
-  type: LoadBalancer
-  loadBalancerIP: "34.93.76.235"
+  type: NodePort          # ← changed from LoadBalancer
   selector:
     app: classkira-app
   ports:
