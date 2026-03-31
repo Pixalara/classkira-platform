@@ -1,0 +1,178 @@
+<!-- 
+  Open in Chrome → Right click → Inspect
+  Set device to Custom: 1200×630
+  Screenshot → Save as classkira-og-image.png
+  Place in public/og/classkira-og-image.png
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClassKira OG Image Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --teal: #0DA896;
+            --pink: #D44F7E;
+            --amber: #E8921A;
+            --blue: #2079CF;
+            --bg-dark: #111110;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            width: 1200px;
+            height: 630px;
+            overflow: hidden;
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #111110 0%, #1a1a18 50%, #0a1628 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            color: white;
+        }
+
+        /* Decorative blobs */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.08;
+        }
+        .blob-1 { width: 400px; height: 400px; background: var(--teal); top: -100px; left: -100px; }
+        .blob-2 { width: 500px; height: 500px; background: var(--pink); bottom: -150px; right: -100px; }
+        .blob-3 { width: 300px; height: 300px; background: var(--amber); bottom: 100px; left: 10%; }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            width: 100%;
+        }
+
+        .url-label {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            font-size: 16px;
+            color: var(--teal);
+            opacity: 0.6;
+            font-weight: 700;
+        }
+
+        .logo {
+            font-size: 80px;
+            font-weight: 900;
+            letter-spacing: -3px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo .c { color: var(--teal); }
+        .logo .l { color: var(--pink); }
+        .logo .a { color: var(--amber); }
+        .logo .s { color: var(--blue); }
+        .logo .s2 { color: var(--teal); }
+        .logo .k { color: var(--pink); }
+        .logo .i { color: var(--amber); position: relative; }
+        .logo .i-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--teal);
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .logo .r { color: var(--blue); }
+        .logo .a2 { color: var(--teal); }
+
+        .tagline {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .pills {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+        .pill {
+            padding: 8px 16px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .pill-teal { border-color: var(--teal); color: var(--teal); }
+        .pill-pink { border-color: var(--pink); color: var(--pink); }
+        .pill-amber { border-color: var(--amber); color: var(--amber); }
+
+        .bottom-strip {
+            position: absolute;
+            bottom: 60px;
+            width: 800px;
+            text-align: center;
+        }
+        .separator {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--teal), transparent);
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        .trusted {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 0.5px;
+        }
+
+        .pixalara-label {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="url-label">classkira.com</div>
+
+    <div class="container">
+        <div class="logo">
+            <span class="c">c</span><span class="l">l</span><span class="a">a</span><span class="s">s</span><span class="s2">s</span><span class="k">k</span><span class="i">i<span class="i-dot"></span></span><span class="r">r</span><span class="a2">a</span>
+        </div>
+        <div class="tagline">Every School. One System.</div>
+        <div class="pills">
+            <div class="pill pill-teal">🎓 School Management</div>
+            <div class="pill pill-pink">💰 Fee Collection</div>
+            <div class="pill pill-amber">📊 Analytics</div>
+        </div>
+    </div>
+
+    <div class="bottom-strip">
+        <div class="separator"></div>
+        <div class="trusted">Trusted by 200+ schools across India</div>
+    </div>
+
+    <div class="pixalara-label">pixalara.com</div>
+</body>
+</html>

@@ -1,3 +1,7 @@
+@php
+  $metaTitle = 'Terms & Conditions — ClassKira';
+  $metaDescription = 'Read ClassKira\'s terms and conditions for using our School Management System. Governed by Indian law, Pixalara LLP.';
+@endphp
 @extends('frontend.index')
 @section('content')
 

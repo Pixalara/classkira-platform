@@ -1,3 +1,7 @@
+@php
+  $metaTitle = 'Privacy Policy — ClassKira by Pixalara LLP';
+  $metaDescription = 'Read ClassKira\'s privacy policy. Learn how we collect, use, and protect your school\'s data on our GCP-powered platform.';
+@endphp
 @extends('frontend.index')
 @section('content')
 

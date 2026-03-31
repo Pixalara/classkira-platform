@@ -1,3 +1,7 @@
+@php
+  $metaTitle = 'ClassKira — Every School. One System.';
+  $metaDescription = 'ClassKira is India\'s most complete School Management System. Manage students, fees, attendance, exams, library & hostel — 8 role dashboards, GKE-powered, 99.9% uptime.';
+@endphp
 @extends('frontend.index')
 @section('content')
 {{-- @php

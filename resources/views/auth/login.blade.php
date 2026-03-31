@@ -1,3 +1,7 @@
+@php
+  $metaTitle = 'Sign In — ClassKira';
+  $metaDescription = 'Sign in to your ClassKira dashboard. Access your school management tools as Super Admin, Admin, Teacher, Student, Parent, or staff.';
+@endphp
 @extends('layouts.signin_page')
 
 @section('content')

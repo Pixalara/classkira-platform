@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <x-meta-tags 
+        :title="$metaTitle ?? 'ClassKira — Every School. One System.'"
+        :description="$metaDescription ?? 'ClassKira is a complete School Management System for modern Indian schools. Manage students, fees, attendance, exams, library and hostel from one unified platform.'"
+    />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ get_settings('system_title') }}</title>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     @include('frontend.include_top')
-
+    @stack('styles')
 </head>
 
 <body data-bs-spy="scroll" data-bs-target=".header-area" data-bs-offset="50" tabindex="0">

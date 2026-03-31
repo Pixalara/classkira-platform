@@ -1,18 +1,22 @@
+@php
+  $metaTitle = 'ClassKira — Every School. One System.';
+  $metaDescription = 'ClassKira is India\'s most complete School Management System. Manage students, fees, attendance, exams, library & hostel — 8 role dashboards, GKE-powered, 99.9% uptime.';
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  <meta name="description" content="ClassKira — The OS for Modern Education. Manage admissions, academics, finance, attendance, and communication in one powerful platform built for Indian schools.">
-  <title>{{ get_settings('system_title') }} — Every School. One System.</title>
-  <link rel="icon" href="{{ asset('frontend/assets/image/purple_gradient.png') }}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('frontend/assets/css/all.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/classkira-redesign.css') }}?v={{ time() }}">
-  <link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
+    <x-meta-tags 
+        :title="$metaTitle ?? 'ClassKira — Every School. One System.'"
+        :description="$metaDescription ?? 'ClassKira is a complete School Management System for modern Indian schools. Manage students, fees, attendance, exams, library and hostel from one powerful platform.'"
+    />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('frontend/assets/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/classkira-redesign.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
+    @stack('styles')
 </head>
 <body>
 
