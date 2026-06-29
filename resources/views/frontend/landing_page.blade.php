@@ -20,7 +20,7 @@
         max-width: none !important;
         object-fit: contain !important;
     }
-    
+
     /* 2. Sign In & buttons - 1 row */
     .signUp-btn, .header-btn a, .header-btn .btn-primary {
         white-space: nowrap !important;
@@ -63,39 +63,284 @@
         50% { transform: perspective(1000px) rotateY(-4deg) rotateX(2deg) translateY(-12px); }
     }
     
+    /* Hero button row */
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* Both buttons */
+    .hero-buttons a,
+    .hero-buttons button {
+      white-space: nowrap;      /* prevent text wrapping */
+      display: inline-flex;
+      align-items: center;
+      position: static;         /* remove any relative positioning
+                                   causing child elements to float */
+    }
+
+    /* Remove any dropdown/tooltip children inside
+       the Explore Features button */
+    .hero-buttons .dropdown-menu,
+    .hero-buttons .tooltip,
+    .hero-buttons [class*="dropdown"] {
+      display: none !important;
+    }
+    /* Hide mobile drawer on desktop */
+    .mobile-menu,
+    #mobileMenu,
+    .nav-drawer {
+      display: none;
+    }
+
     /* Responsive Media Queries */
     @media (max-width: 991px) {
         .logo img, .logo-img, .small-device-show img {
-            height: 60px !important; /* Smaller logo on tablets */
-        }
-        .bananr-right-img {
-            transform: none; /* Disable aggressive 3D tilt on tablets/mobile to avoid overflow */
-            animation: dashFloatMobile 5s ease-in-out infinite;
-            margin-top: 30px;
-        }
-        @keyframes dashFloatMobile {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
+            height: 60px !important;
         }
     }
     
+    @media (max-width: 768px) {
+      /* ── Navbar container ── */
+      nav, header, .navbar, .ck-nav, .header-area.navbar {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 12px 16px !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 9999 !important;
+        background: #ffffff !important;
+        box-shadow: 0 1px 12px rgba(0,0,0,0.08) !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        gap: 0 !important;
+        height: 64px !important;
+      }
+
+      .header-area .container-xl,
+      .header-area .row {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+      }
+
+      /* ── Logo: left side ── */
+      .ck-logo, .navbar-brand, .logo,
+      nav a:first-child, header .logo-wrap {
+        flex: 1 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: left !important;
+      }
+
+      /* ── HIDE Sign In from navbar on mobile ── */
+      nav .nav-signin,
+      header .nav-signin,
+      .navbar .sign-in-link,
+      nav a[href*="login"],
+      header a[href*="login"],
+      .ck-nav a[href*="login"],
+      .header-area a[href*="login"] {
+        display: none !important;
+        visibility: hidden !important;
+      }
+
+      /* ── HIDE Register School button from navbar ── */
+      nav .nav-register-btn,
+      header .nav-register-btn,
+      .header-area .nav-register-btn,
+      .navbar button:not(.hamburger):not(.navbar-toggler):not(#mobileMenuToggle),
+      nav > button,
+      header > button,
+      .ck-nav > button,
+      nav a.btn,
+      header a.btn,
+      [class*="register-btn"],
+      [class*="btn-register"] {
+        display: none !important;
+        visibility: hidden !important;
+      }
+
+      /* ── HIDE desktop nav links ── */
+      nav ul, nav .nav-links,
+      .navbar-menu, .desktop-nav,
+      header ul, .menu-items {
+        display: none !important;
+      }
+
+      /* ── Hamburger: right side, clean 3 lines ── */
+      .hamburger, .navbar-toggler,
+      .menu-toggle, #mobileMenuToggle,
+      button[aria-label*="menu"],
+      button[aria-label*="Menu"],
+      button[aria-label*="navigation"] {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 5px !important;
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        background: transparent !important;
+        border: 1.5px solid rgba(0,0,0,0.15) !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        flex-shrink: 0 !important;
+        box-shadow: none !important;
+        position: relative !important;
+      }
+
+      /* 3 hamburger lines */
+      .hamburger span, .navbar-toggler span,
+      #mobileMenuToggle span {
+        display: block !important;
+        width: 16px !important;
+        height: 2px !important;
+        background: #1A1A18 !important;
+        border-radius: 2px !important;
+        transition: transform 0.25s ease, opacity 0.2s !important;
+      }
+
+      /* Hamburger → X when open */
+      .hamburger.is-open span:nth-child(1),
+      #mobileMenuToggle.is-open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg) !important;
+      }
+      .hamburger.is-open span:nth-child(2),
+      #mobileMenuToggle.is-open span:nth-child(2) {
+        opacity: 0 !important;
+      }
+      .hamburger.is-open span:nth-child(3),
+      #mobileMenuToggle.is-open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg) !important;
+      }
+
+      /* ── Mobile drawer ── */
+      #mobileMenu, .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        border-top: 1px solid rgba(0,0,0,0.06);
+        padding: 12px 16px 20px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        flex-direction: column;
+        gap: 2px;
+        z-index: 9998;
+      }
+
+      #mobileMenu.open, .mobile-menu.open {
+        display: flex !important;
+      }
+
+      #mobileMenu a, .mobile-menu a {
+        display: block !important;
+        padding: 11px 14px;
+        font-size: 15px;
+        font-weight: 700;
+        color: #1A1A18;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: background 0.15s;
+      }
+
+      #mobileMenu a:hover, .mobile-menu a:hover {
+        background: #E1F9F6;
+        color: #0DA896;
+      }
+
+      .drawer-divider {
+        height: 1px;
+        background: rgba(0,0,0,0.08);
+        margin: 10px 0;
+      }
+
+      .drawer-signin {
+        display: block !important;
+        width: 100%;
+        padding: 13px;
+        background: transparent;
+        color: #0DA896;
+        font-size: 15px;
+        font-weight: 800;
+        border-radius: 12px;
+        text-align: center;
+        border: 1.5px solid #0DA896;
+        text-decoration: none;
+        box-sizing: border-box;
+        margin-top: 4px;
+      }
+
+      .drawer-register {
+        display: block !important;
+        width: 100%;
+        padding: 13px;
+        background: #0DA896;
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 800;
+        border-radius: 12px;
+        text-align: center;
+        border: none;
+        cursor: pointer;
+        margin-top: 8px;
+        box-sizing: border-box;
+      }
+
+      /* ── Hero section: clear fixed navbar ── */
+      .bannar-area, section.bannar-area,
+      .hero-section {
+        padding-top: 100px !important;
+      }
+
+      .hero-buttons {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        margin-top: 28px !important;
+      }
+
+      .hero-buttons a,
+      .hero-buttons button {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+
+      body { overflow-x: hidden; }
+      * { box-sizing: border-box; }
+    }
+
+    /* ── Desktop: ensure mobile elements hidden ── */
+    @media (min-width: 769px) {
+      .menu-items,
+      nav ul {
+        display: flex !important;
+      }
+      .hamburger, #mobileMenuToggle {
+        display: none !important;
+      }
+      #mobileMenu, .mobile-menu {
+        display: none !important;
+      }
+    }
+
     @media (max-width: 576px) {
         .logo img, .logo-img, .small-device-show img {
-            height: 48px !important; /* Even smaller logo on mobile */
-        }
-        
-        .header-btn {
-            gap: 4px !important;
-        }
-        
-        /* Hide Register button on very small screens to fit Sign in and Hamburger */
-        .header-area .btn-primary {
-            display: none !important;
-        }
-        
-        .header-area .signUp-btn {
-            padding: 8px 14px !important;
-            font-size: 13px !important;
+            height: 48px !important;
         }
     }
     
@@ -111,17 +356,17 @@
 
 
 <!--  Bannar Area Start  -->
-<section class="bannar-area">
+<section class="bannar-area hero-section">
     <div class="container-xl">
         <div class="row align-items-center">
             <div class="col-lg-6 mb-5 mb-lg-0">
                 <!-- Bannar Content -->
                 <div class="bannar-content">
                     <span class="hero-pill">{{ get_settings('system_title') }}</span>
-                    <h2><span>Bringing Excellence</span><br>To Students Everywhere</h2>
-                    <p>Empowering and inspiring all students to excel as life long learners. Streamline administration, empower teachers, and engage parents effortlessly.</p>
+                    <h2 class="hero-headline"><span>Bringing Excellence</span><br>To Students Everywhere</h2>
+                    <p class="hero-subtext">Empowering and inspiring all students to excel as life long learners. Streamline administration, empower teachers, and engage parents effortlessly.</p>
                     
-                    <div class="hero-cta">
+                    <div class="hero-buttons">
                         @if(isset(auth()->user()->id) && auth()->user()->id != "")
                             <a class="btn-primary" href="{{ $dashboard }}">{{ get_phrase('Access Dashboard') }} <i class="fa-solid fa-arrow-right ms-2"></i></a>
                         @else
@@ -424,6 +669,17 @@
     function onSubmit(token) {
       document.getElementById("schoolReg").submit();
     }
+
+    /* Close mobile drawer when clicking outside */
+    document.addEventListener('click', function(e) {
+      var menu = document.getElementById('mobileMenu');
+      var toggle = document.getElementById('mobileMenuToggle');
+      if (!menu || !toggle) return;
+      if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+        menu.style.display = 'none';
+        toggle.classList.remove('is-open');
+      }
+    });
 
   </script>
 

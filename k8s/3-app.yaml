@@ -34,7 +34,7 @@ spec:
 
       containers:
         - name: classkira
-          image: asia-south1-docker.pkg.dev/classkira-platform/lms-repo/classkira-app:v7
+          image: asia-south1-docker.pkg.dev/classkira-platform/lms-repo/classkira-app:v8
           ports:
             - containerPort: 80
 

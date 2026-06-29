@@ -28,27 +28,32 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ---------- 3. HAMBURGER MENU ---------- */
-  var hamburger = document.getElementById('ckHamburger');
-  var mobileMenu = document.getElementById('ckMobileMenu');
-  if (hamburger && mobileMenu) {
-    hamburger.addEventListener('click', function () {
-      mobileMenu.classList.toggle('open');
-      // Toggle icon
-      var icon = hamburger.querySelector('svg');
-      if (mobileMenu.classList.contains('open')) {
-        hamburger.innerHTML = '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>';
-      } else {
-        hamburger.innerHTML = '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
+  (function() {
+    const toggle = document.getElementById('mobileMenuToggle') || document.querySelector('.hamburger, .navbar-toggler, .menu-toggle');
+    const menu = document.getElementById('mobileMenu') || document.querySelector('.mobile-menu, .nav-drawer');
+
+    if (!toggle || !menu) return;
+
+    toggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      menu.classList.toggle('open');
+      toggle.classList.toggle('is-open');
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+        menu.classList.remove('open');
+        toggle.classList.remove('is-open');
       }
     });
-    // Close on link click
-    mobileMenu.querySelectorAll('a').forEach(function (a) {
-      a.addEventListener('click', function () {
-        mobileMenu.classList.remove('open');
-        hamburger.innerHTML = '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
+
+    menu.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('click', () => {
+        menu.classList.remove('open');
+        toggle.classList.remove('is-open');
       });
     });
-  }
+  })();
 
   /* ---------- 4. PASSWORD TOGGLE ---------- */
   var pwdToggle = document.getElementById('ckPwdToggle');
