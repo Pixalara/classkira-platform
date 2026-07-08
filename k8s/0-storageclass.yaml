@@ -1,0 +1,10 @@
+# gp3 StorageClass backed by the EBS CSI driver.
+# Required for the PVCs in 2-pvcs.yaml (mysql-pvc, laravel-storage-pvc).
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: gp3
+provisioner: ebs.csi.aws.com
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  type: gp3

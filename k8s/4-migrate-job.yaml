@@ -23,7 +23,7 @@ spec:
               echo "MySQL is ready!"
       containers:
         - name: migrate
-          image: asia-south1-docker.pkg.dev/classkira-platform/lms-repo/classkira-app:v1
+          image: 305042756485.dkr.ecr.us-east-1.amazonaws.com/classkira-platform:latest
           command:
             - sh
             - -c

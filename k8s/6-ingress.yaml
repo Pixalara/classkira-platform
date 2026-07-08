@@ -1,31 +1,18 @@
-# ── GKE Ingress ───────────────────────────────────────────────────────
-# Handles SSL termination + HTTP→HTTPS redirect + routing
-# Requires a GLOBAL static IP (not regional)
-#
-# BEFORE APPLYING:
-# 1. Create global IP:
-#    gcloud compute addresses create classkira-global-ip --global --ip-version IPV4
-# 2. Get the new IP:
-#    gcloud compute addresses describe classkira-global-ip --global
-# 3. Update DNS A records at your registrar:
-#    classkira.com     → <new global IP>
-#    www.classkira.com → <new global IP>
-# ─────────────────────────────────────────────────────────────────────
+# EKS ingress for the AWS Load Balancer Controller.
+# Replace the certificate ARN with an ACM certificate in the same AWS region.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: classkira-ingress
   namespace: default
   annotations:
-    # Attach the managed SSL certificate
-    networking.gke.io/managed-certificates: classkira-ssl
-    # Use the global static IP (must be GLOBAL not regional)
-    kubernetes.io/ingress.global-static-ip-name: classkira-global-ip
-    # Attach HTTP→HTTPS redirect config
-    networking.gke.io/v1beta1.FrontendConfig: classkira-frontend-config
-    # Use GCE ingress class
-    kubernetes.io/ingress.class: "gce"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:305042756485:certificate/REPLACE_WITH_CERTIFICATE_ID
 spec:
+  ingressClassName: alb
   rules:
     - host: classkira.com
       http:

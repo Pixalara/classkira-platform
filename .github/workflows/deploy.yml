@@ -1,53 +1,88 @@
-name: Deploy to Cloud Run
+name: CI - Test, Build, and Push to ECR
 
 on:
   push:
     branches:
-      - main  # Or your primary branch
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
 
 env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  REGION: us-central1 # Change to your preferred region (e.g., asia-south1 for India)
-  SERVICE_NAME: classkira-platform
-  REPOSITORY: classkira-repo
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: classkira-platform
 
 jobs:
-  deploy:
+  test:
+    name: Test and validate
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Google Auth
-        uses: 'google-github-actions/auth@v1'
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
         with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          php-version: "8.2"
+          extensions: mbstring, pdo_mysql, exif, pcntl, bcmath, gd, zip
+          coverage: none
 
-      - name: Set up Cloud SDK
-        uses: 'google-github-actions/setup-gcloud@v1'
+      - name: Validate composer.json
+        run: composer validate --no-check-publish --no-check-all
 
-      - name: Authorize Docker
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Prepare test environment
         run: |
-          gcloud auth configure-docker ${REGION}-docker.pkg.dev
+          cp .env.example .env
+          php artisan key:generate --ansi
 
-      - name: Build and Push Container
-        run: |
-          # Create repository if it doesn't exist
-          gcloud artifacts repositories create ${REPOSITORY} --repository-format=docker --location=${REGION} || true
-          
-          IMAGE_TAG="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${SERVICE_NAME}:${GITHUB_SHA}"
-          docker build -t $IMAGE_TAG .
-          docker push $IMAGE_TAG
-          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+      - name: Lint PHP syntax
+        run: find app -name "*.php" -print0 | xargs -0 -n1 php -l
 
-      - name: Deploy to Cloud Run
-        uses: 'google-github-actions/deploy-cloudrun@v1'
+      - name: Run PHPUnit test suite
+        run: vendor/bin/phpunit --testsuite Unit
+
+  build-and-push:
+    name: Build, tag, and push Docker image to ECR
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          service: ${{ env.SERVICE_NAME }}
-          region: ${{ env.REGION }}
-          image: ${{ env.IMAGE_TAG }}
-          flags: '--allow-unauthenticated --port=80'
-          env_vars: |
-            APP_ENV=production
-            APP_DEBUG=false
-            LOG_CHANNEL=stderr
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "Image pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Summary
+        run: |
+          echo "### Docker image pushed to ECR" >> $GITHUB_STEP_SUMMARY
+          echo "- Tag: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Also tagged: \`latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Deployment to EKS is a manual step. Pull the image and run a rolling update with:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "kubectl set image deployment/classkira-app classkira=${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }} -n default" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

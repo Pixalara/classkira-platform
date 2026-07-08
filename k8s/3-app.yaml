@@ -18,38 +18,34 @@ spec:
         app: classkira-app
     spec:
       initContainers:
-        # Wait for Cloud SQL to be reachable before starting Apache
         - name: wait-for-db
           image: busybox:1.35
           command:
             - sh
             - -c
             - |
-              echo "Waiting for Cloud SQL at 34.47.211.129:3306..."
-              until nc -z 34.47.211.129 3306; do
-                echo "Cloud SQL not ready, retrying in 5s..."
+              echo "Waiting for MySQL at mysql-service:3306..."
+              until nc -z mysql-service 3306; do
+                echo "MySQL not ready, retrying in 5s..."
                 sleep 5
               done
-              echo "Cloud SQL is reachable!"
+              echo "MySQL is reachable!"
 
       containers:
         - name: classkira
-          image: asia-south1-docker.pkg.dev/classkira-platform/lms-repo/classkira-app:v8
+          image: 305042756485.dkr.ecr.us-east-1.amazonaws.com/classkira-platform:latest
           ports:
             - containerPort: 80
 
-          # Load all environment variables from Kubernetes secret
           envFrom:
             - secretRef:
                 name: classkira-secrets
 
-          # Persistent storage for user uploads and generated PDFs
           volumeMounts:
             - name: laravel-storage
               mountPath: /var/www/html/storage/app
               subPath: app
 
-          # Resource limits
           resources:
             requests:
               memory: "128Mi"
@@ -58,7 +54,6 @@ spec:
               memory: "256Mi"
               cpu: "250m"
 
-          # Readiness probe
           readinessProbe:
             httpGet:
               path: /
@@ -67,7 +62,6 @@ spec:
             periodSeconds: 10
             failureThreshold: 3
 
-          # Liveness probe
           livenessProbe:
             httpGet:
               path: /
@@ -82,16 +76,13 @@ spec:
             claimName: laravel-storage-pvc
 
 ---
-# ── Service ──────────────────────────────────────────────────────────
-# Changed from LoadBalancer to NodePort
-# GKE Ingress requires NodePort — traffic now flows through Ingress
 apiVersion: v1
 kind: Service
 metadata:
   name: classkira-service
   namespace: default
 spec:
-  type: NodePort          # ← changed from LoadBalancer
+  type: ClusterIP
   selector:
     app: classkira-app
   ports:

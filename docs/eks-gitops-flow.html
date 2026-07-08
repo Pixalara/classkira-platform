@@ -24,6 +24,9 @@
       --pod: #0f766e;
       --dns: #0ea5e9;
       --user: #475569;
+      --metric: #dc2626;
+      --scale: #16a34a;
+      --node: #ea580c;
       --shadow: 0 14px 34px rgba(23, 32, 51, 0.11);
     }
 
@@ -110,6 +113,7 @@
       grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 14px;
       align-items: stretch;
+      min-width: 0;
     }
 
     .flow.deploy {
@@ -156,6 +160,38 @@
         "userwire userwire userwire userwire userwire";
     }
 
+    .flow.scale {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-areas:
+        "traffic route service pods metrics hpa"
+        "spread spread spread spread spread spread"
+        "capacity capacity nodes nodes rollout rollout";
+    }
+
+    .flow.scale::before {
+      content: "";
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 29%;
+      height: 3px;
+      background: var(--line);
+      opacity: 0.68;
+      transform: translateY(-50%);
+      z-index: 0;
+    }
+
+    .flow.scale::after {
+      content: "";
+      position: absolute;
+      left: 18%;
+      right: 18%;
+      bottom: 31%;
+      height: 3px;
+      border-top: 3px dashed rgba(22, 163, 74, 0.45);
+      z-index: 0;
+    }
+
     .flow.auth {
       grid-template-columns: repeat(5, minmax(0, 1fr));
       grid-template-areas:
@@ -179,6 +215,7 @@
     .node {
       position: relative;
       min-height: 148px;
+      min-width: 0;
       border: 1px solid rgba(23, 32, 51, 0.1);
       border-radius: 8px;
       background: var(--panel);
@@ -191,7 +228,7 @@
     }
 
     .node::after {
-      content: "→";
+      content: "\2192";
       position: absolute;
       top: 50%;
       right: -16px;
@@ -231,7 +268,7 @@
     }
 
     .ecr::after {
-      content: "↘";
+      content: "\2198";
       right: -16px;
       top: calc(100% + 10px);
     }
@@ -294,12 +331,15 @@
     }
 
     .node.end::after,
-    .notes::after {
+    .notes::after,
+    .spread::after,
+    .rollout::after {
       display: none;
     }
 
     .notes::before,
     .auth-note::before,
+    .spread::before,
     .users-card::before,
     .dns::before,
     .alb::before,
@@ -311,6 +351,7 @@
     .node strong {
       font-size: 18px;
       line-height: 1.15;
+      overflow-wrap: anywhere;
     }
 
     .node span,
@@ -318,6 +359,7 @@
       color: var(--muted);
       font-size: 13.5px;
       line-height: 1.38;
+      overflow-wrap: anywhere;
     }
 
     .node ul {
@@ -326,14 +368,16 @@
     }
 
     .badge {
-      width: 46px;
+      min-width: 46px;
+      width: max-content;
       height: 46px;
       border-radius: 8px;
       display: grid;
       place-items: center;
       color: #fff;
       font-weight: 900;
-      font-size: 15px;
+      font-size: 14px;
+      padding: 0 10px;
     }
 
     .github { grid-area: github; }
@@ -352,6 +396,16 @@
     .alb { grid-area: alb; }
     .svc { grid-area: svc; }
     .app { grid-area: app; }
+    .traffic { grid-area: traffic; }
+    .route { grid-area: route; }
+    .service-route { grid-area: service; }
+    .pod-pool { grid-area: pods; }
+    .metrics { grid-area: metrics; }
+    .hpa { grid-area: hpa; }
+    .spread { grid-area: spread; }
+    .capacity { grid-area: capacity; }
+    .nodes { grid-area: nodes; }
+    .rollout { grid-area: rollout; }
     .auth-runner { grid-area: authrunner; }
     .oidc { grid-area: oidc; }
     .iam { grid-area: iam; }
@@ -377,6 +431,15 @@
     .svc .badge { background: #2563eb; }
     .app .badge { background: var(--eks); }
     .users-card .badge { background: var(--user); }
+    .traffic .badge { background: var(--user); }
+    .route .badge { background: #0f766e; }
+    .service-route .badge { background: #2563eb; }
+    .pod-pool .badge { background: var(--pod); }
+    .metrics .badge { background: var(--metric); }
+    .hpa .badge { background: var(--scale); }
+    .capacity .badge { background: var(--scale); }
+    .nodes .badge { background: var(--node); }
+    .rollout .badge { background: var(--eks); }
 
     .runner {
       border-color: rgba(9, 105, 218, 0.28);
@@ -454,6 +517,7 @@
       color: #0369a1;
       font-weight: 900;
       font-size: 18px;
+      overflow-wrap: anywhere;
     }
 
     .notes {
@@ -523,6 +587,202 @@
     .alb .pulse { color: #0f766e; animation-delay: 0.4s; }
     .svc .pulse { color: #2563eb; animation-delay: 0.6s; }
     .app .pulse { color: var(--eks); animation-delay: 0.8s; }
+    .traffic .pulse { color: var(--user); }
+    .route .pulse { color: #0f766e; animation-delay: 0.2s; }
+    .service-route .pulse { color: #2563eb; animation-delay: 0.4s; }
+    .pod-pool .pulse { color: var(--pod); animation-delay: 0.6s; }
+    .metrics .pulse { color: var(--metric); animation-delay: 0.8s; }
+    .hpa .pulse { color: var(--scale); animation-delay: 1s; }
+    .capacity .pulse { color: var(--scale); animation-delay: 1.2s; }
+    .nodes .pulse { color: var(--node); animation-delay: 1.4s; }
+    .rollout .pulse { color: var(--eks); animation-delay: 1.6s; }
+
+    .pod-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .mini-pod {
+      min-height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #ccfbf1;
+      color: #115e59;
+      border: 1px solid rgba(15, 118, 110, 0.2);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .mini-pod.new {
+      background: #dcfce7;
+      color: #166534;
+      border-color: rgba(22, 163, 74, 0.24);
+    }
+
+    .meter {
+      display: grid;
+      gap: 7px;
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #22c55e, #ef4444);
+    }
+
+    .scale-note {
+      min-height: auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      background: #f8fafc;
+    }
+
+    .traffic-map {
+      position: relative;
+      display: grid;
+      grid-template-columns: 0.9fr 0.9fr 1fr 1fr 1.35fr;
+      gap: 12px;
+      align-items: stretch;
+      margin-bottom: 16px;
+      padding: 14px;
+      border: 1px solid rgba(95, 107, 127, 0.16);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.94)),
+        radial-gradient(circle at 18% 50%, rgba(14, 165, 233, 0.12), transparent 28%),
+        radial-gradient(circle at 84% 50%, rgba(22, 163, 74, 0.12), transparent 30%);
+      overflow: hidden;
+    }
+
+    .traffic-map::before {
+      content: "";
+      position: absolute;
+      left: 8%;
+      right: 18%;
+      top: 50%;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #94a3b8, #0ea5e9, #2563eb, #16a34a);
+      transform: translateY(-50%);
+      opacity: 0.4;
+    }
+
+    .traffic-hop {
+      position: relative;
+      min-height: 112px;
+      border: 1px solid rgba(23, 32, 51, 0.1);
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 10px 22px rgba(23, 32, 51, 0.07);
+      padding: 12px;
+      display: grid;
+      gap: 7px;
+      align-content: center;
+      text-align: center;
+      z-index: 1;
+    }
+
+    .traffic-hop b {
+      font-size: 15px;
+      overflow-wrap: anywhere;
+    }
+
+    .traffic-hop span {
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
+
+    .traffic-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      justify-self: center;
+      color: #fff;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .traffic-hop.users-hop .traffic-icon { background: var(--user); }
+    .traffic-hop.dns-hop .traffic-icon { background: var(--dns); }
+    .traffic-hop.alb-hop .traffic-icon { background: #0f766e; }
+    .traffic-hop.svc-hop .traffic-icon { background: #2563eb; }
+    .traffic-hop.pods-hop .traffic-icon { background: var(--pod); }
+
+    .packet {
+      position: absolute;
+      top: calc(50% - 5px);
+      left: 8%;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #0ea5e9;
+      box-shadow: 0 0 0 6px rgba(14, 165, 233, 0.14);
+      z-index: 2;
+      animation: packetMove 4.8s linear infinite;
+    }
+
+    .packet:nth-child(2) {
+      animation-delay: 1.2s;
+      background: #16a34a;
+      box-shadow: 0 0 0 6px rgba(22, 163, 74, 0.14);
+    }
+
+    .packet:nth-child(3) {
+      animation-delay: 2.4s;
+      background: #f97316;
+      box-shadow: 0 0 0 6px rgba(249, 115, 22, 0.14);
+    }
+
+    @keyframes packetMove {
+      0% { left: 8%; opacity: 0; }
+      8% { opacity: 1; }
+      92% { opacity: 1; }
+      100% { left: 82%; opacity: 0; }
+    }
+
+    .traffic-pods {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .traffic-pods span {
+      border-radius: 8px;
+      background: #ccfbf1;
+      border: 1px solid rgba(15, 118, 110, 0.18);
+      color: #115e59;
+      padding: 8px 4px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .traffic-caption {
+      grid-column: 1 / -1;
+      justify-self: center;
+      border-radius: 999px;
+      border: 1px solid rgba(100, 116, 139, 0.18);
+      background: #fff;
+      color: #475569;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 900;
+      text-align: center;
+      z-index: 1;
+    }
 
     @keyframes glow {
       0%, 100% {
@@ -586,6 +846,10 @@
     }
 
     @media (max-width: 1100px) {
+      main {
+        width: min(100% - 28px, 1280px);
+      }
+
       .flow.deploy {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         grid-template-areas:
@@ -625,42 +889,49 @@
           "authnote authnote";
       }
 
-      .auth-note {
+      .flow.scale {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-areas:
+          "traffic route"
+          "service pods"
+          "metrics hpa"
+          "spread spread"
+          "capacity nodes"
+          "rollout rollout";
+      }
+
+      .auth-note,
+      .scale-note {
         grid-template-columns: 1fr;
       }
 
       .timeline {
         grid-template-columns: repeat(4, 1fr);
       }
+
+      .traffic-map {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .traffic-map::before,
+      .packet {
+        display: none;
+      }
+
+      .pods-hop {
+        grid-column: 1 / -1;
+      }
     }
 
-    @media (max-width: 700px) {
-      main {
-        width: min(100% - 20px, 1280px);
+    @media (max-width: 860px) {
+      .section {
+        padding: 14px;
       }
 
-      .section-title {
-        display: grid;
-      }
-
-      .section-title p {
-        text-align: left;
-      }
-
-      .flow.deploy,
-      .flow.users {
+      .flow.users,
+      .flow.auth,
+      .flow.scale {
         grid-template-columns: 1fr;
-        grid-template-areas:
-          "github"
-          "actions"
-          "runner"
-          "ecr"
-          "handoff"
-          "manifest"
-          "argo"
-          "eks"
-          "pod"
-          "notes";
       }
 
       .flow.users {
@@ -683,6 +954,118 @@
           "authnote";
       }
 
+      .flow.scale {
+        grid-template-areas:
+          "traffic"
+          "route"
+          "service"
+          "pods"
+          "metrics"
+          "hpa"
+          "spread"
+          "capacity"
+          "nodes"
+          "rollout";
+      }
+
+      .flow.deploy::before,
+      .flow.users::before,
+      .flow.auth::before,
+      .flow.scale::before,
+      .flow.scale::after {
+        display: none;
+      }
+
+      .auth-note,
+      .scale-note,
+      .notes {
+        grid-template-columns: 1fr;
+      }
+
+      .traffic-map {
+        grid-template-columns: 1fr;
+      }
+
+      .pods-hop {
+        grid-column: auto;
+      }
+    }
+
+    @media (max-width: 700px) {
+      main {
+        width: min(100% - 20px, 1280px);
+        padding: 20px 0 32px;
+      }
+
+      .section-title {
+        display: grid;
+        gap: 8px;
+      }
+
+      .section-title p {
+        text-align: left;
+      }
+
+      .flow.deploy {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "github"
+          "actions"
+          "runner"
+          "ecr"
+          "handoff"
+          "manifest"
+          "argo"
+          "eks"
+          "pod"
+          "notes";
+      }
+
+      .flow.users {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "users"
+          "dns"
+          "alb"
+          "svc"
+          "app"
+          "userwire";
+      }
+
+      .flow.auth {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "authrunner"
+          "oidc"
+          "iam"
+          "sts"
+          "ecraccess"
+          "authnote";
+      }
+
+      .flow.scale {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "traffic"
+          "route"
+          "service"
+          "pods"
+          "metrics"
+          "hpa"
+          "spread"
+          "capacity"
+          "nodes"
+          "rollout";
+      }
+
+      .flow.deploy::before,
+      .flow.users::before,
+      .flow.auth::before,
+      .flow.scale::before,
+      .flow.scale::after {
+        display: none;
+      }
+
       .node::after {
         top: auto;
         right: 50%;
@@ -690,14 +1073,14 @@
         width: 30px;
         height: 30px;
         transform: translateX(50%);
-        content: "↓";
+        content: "\2193";
       }
 
       .ecr::after {
         top: auto;
         right: 50%;
         bottom: -14px;
-        content: "↓";
+        content: "\2193";
       }
 
       .control-line {
@@ -710,6 +1093,53 @@
 
       .timeline {
         grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      h1 {
+        font-size: 30px;
+        line-height: 1.12;
+      }
+
+      .lead {
+        font-size: 15px;
+      }
+
+      .section-title h2 {
+        font-size: 18px;
+      }
+
+      .node {
+        min-height: 132px;
+        padding: 14px;
+      }
+
+      .node strong {
+        font-size: 16px;
+      }
+
+      .node span,
+      .node li,
+      .fact small {
+        font-size: 12.8px;
+      }
+
+      .user-icons,
+      .pod-grid,
+      .traffic-pods {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .wire-label {
+        width: 100%;
+        border-radius: 8px;
+        text-align: center;
+        line-height: 1.35;
+      }
+
+      .domain {
+        font-size: 15px;
       }
     }
   </style>
@@ -976,6 +1406,152 @@
           </article>
 
           <div class="wire-label user-wire">Runtime access path: users open classkira.com, DNS sends traffic to AWS load balancer, then EKS serves the app</div>
+        </div>
+      </section>
+
+      <section class="section" aria-label="AWS load balancing and Kubernetes autoscaling flow">
+        <div class="section-title">
+          <h2>4. Traffic Distribution and Autoscaling</h2>
+          <p>ALB spreads requests across healthy pods. Kubernetes adds pods, and the node layer adds capacity when pods need more room.</p>
+        </div>
+
+        <div class="traffic-map" aria-label="Visual traffic path from users to EKS pods">
+          <span class="packet" aria-hidden="true"></span>
+          <span class="packet" aria-hidden="true"></span>
+          <span class="packet" aria-hidden="true"></span>
+
+          <div class="traffic-hop users-hop">
+            <div class="traffic-icon">Users</div>
+            <b>Browser requests</b>
+            <span>Students, teachers, parents, and admins open ClassKira.</span>
+          </div>
+
+          <div class="traffic-hop dns-hop">
+            <div class="traffic-icon">DNS</div>
+            <b>classkira.com</b>
+            <span>DNS resolves the domain to the public AWS load balancer.</span>
+          </div>
+
+          <div class="traffic-hop alb-hop">
+            <div class="traffic-icon">ALB</div>
+            <b>AWS ALB</b>
+            <span>HTTPS is accepted and only healthy Kubernetes targets receive traffic.</span>
+          </div>
+
+          <div class="traffic-hop svc-hop">
+            <div class="traffic-icon">SVC</div>
+            <b>Ingress + Service</b>
+            <span>Kubernetes routes each request to a ready ClassKira pod.</span>
+          </div>
+
+          <div class="traffic-hop pods-hop">
+            <div class="traffic-icon">Pods</div>
+            <b>Laravel pods</b>
+            <div class="traffic-pods" aria-label="Traffic split across pods">
+              <span>Pod A</span>
+              <span>Pod B</span>
+              <span>Pod C</span>
+            </div>
+          </div>
+
+          <div class="traffic-caption">Traffic path: Users -> DNS -> AWS ALB -> Kubernetes Ingress/Service -> healthy ClassKira pods</div>
+        </div>
+
+        <div class="flow scale">
+          <article class="node traffic" data-step="T1">
+            <div class="pulse"></div>
+            <div class="badge">Load</div>
+            <strong>User traffic increases</strong>
+            <span>More students, teachers, parents, and admins open ClassKira at the same time.</span>
+          </article>
+
+          <article class="node route" data-step="T2">
+            <div class="pulse"></div>
+            <div class="badge">ALB</div>
+            <strong>AWS Application Load Balancer</strong>
+            <span>The ALB terminates HTTPS, checks pod health through the ingress target group, and sends each request to a healthy target.</span>
+          </article>
+
+          <article class="node service-route" data-step="T3">
+            <div class="pulse"></div>
+            <div class="badge">SVC</div>
+            <strong>Kubernetes Service</strong>
+            <span>The Service keeps a stable internal address and tracks which pods are ready to receive traffic.</span>
+          </article>
+
+          <article class="node pod-pool" data-step="T4">
+            <div class="pulse"></div>
+            <div class="badge">Pods</div>
+            <strong>ClassKira pod pool</strong>
+            <div class="pod-grid" aria-label="Application pods">
+              <div class="mini-pod">Pod A</div>
+              <div class="mini-pod">Pod B</div>
+              <div class="mini-pod">Pod C</div>
+            </div>
+            <span>Requests are distributed across ready Laravel pods instead of overloading one container.</span>
+          </article>
+
+          <article class="node metrics" data-step="T5">
+            <div class="pulse"></div>
+            <div class="badge">CPU</div>
+            <strong>Metrics rise</strong>
+            <div class="meter" aria-label="Resource usage">
+              <span>CPU / memory / request pressure</span>
+              <div class="bar"><span style="width: 82%"></span></div>
+            </div>
+            <span>Metrics Server reports usage so Kubernetes can compare current load with the scaling target.</span>
+          </article>
+
+          <article class="node hpa" data-step="T6">
+            <div class="pulse"></div>
+            <div class="badge">HPA</div>
+            <strong>Horizontal Pod Autoscaler</strong>
+            <span>When usage stays above the target, HPA increases the deployment replica count, for example from 3 pods to 6 pods.</span>
+          </article>
+
+          <article class="node spread scale-note">
+            <div class="fact">
+              <b>Load balancing</b>
+              <small>ALB and Kubernetes only send traffic to healthy, ready pods. Failed pods are removed from rotation.</small>
+            </div>
+            <div class="fact">
+              <b>Pod scaling</b>
+              <small>HPA does not create servers. It changes desired pod replicas on the Kubernetes deployment.</small>
+            </div>
+            <div class="fact">
+              <b>Node scaling</b>
+              <small>If there is no space for new pods, Cluster Autoscaler or Karpenter adds EC2 worker capacity.</small>
+            </div>
+          </article>
+
+          <article class="node capacity" data-step="T7">
+            <div class="pulse"></div>
+            <div class="badge">More</div>
+            <strong>New pods requested</strong>
+            <div class="pod-grid" aria-label="Scaled application pods">
+              <div class="mini-pod">Pod A</div>
+              <div class="mini-pod">Pod B</div>
+              <div class="mini-pod">Pod C</div>
+              <div class="mini-pod new">Pod D</div>
+              <div class="mini-pod new">Pod E</div>
+              <div class="mini-pod new">Pod F</div>
+            </div>
+            <span>The deployment controller starts more ClassKira pods to absorb the traffic spike.</span>
+          </article>
+
+          <article class="node nodes" data-step="T8">
+            <div class="pulse"></div>
+            <div class="badge">EC2</div>
+            <strong>Worker nodes expand</strong>
+            <span>If existing EKS nodes are full, an autoscaler provisions more EC2 capacity and Kubernetes schedules pending pods there.</span>
+          </article>
+
+          <article class="node rollout" data-step="T9">
+            <div class="pulse"></div>
+            <div class="badge">Ready</div>
+            <strong>Traffic rebalances</strong>
+            <span>As new pods become ready, ALB and Service routing include them, so the same user load is shared across more capacity.</span>
+          </article>
         </div>
       </section>
     </div>

@@ -1,7 +1,6 @@
 FROM php:8.4-apache
 
-# Install system dependencies
-# Note: default-mysql-client removed — database is Cloud SQL (external)
+# Install system dependencies.
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -15,19 +14,19 @@ RUN apt-get update && apt-get install -y \
     npm \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
+# Install PHP extensions.
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Get latest Composer
+# Get latest Composer.
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
+# Set working directory.
 WORKDIR /var/www/html
 
-# Enable Apache mod_rewrite
+# Enable Apache mod_rewrite.
 RUN a2enmod rewrite
 
-# Configure Apache VirtualHost
+# Configure Apache VirtualHost.
 RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     ServerName localhost\n\
@@ -40,12 +39,12 @@ RUN echo '<VirtualHost *:80>\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Copy application files
+# Copy application files.
 COPY . .
 RUN rm -f bootstrap/cache/*.php
 
-# Create minimal .env if not present
-# All real values are injected via environment variables at runtime
+# Create minimal .env if not present.
+# Real production values are injected through Kubernetes environment variables.
 RUN if [ ! -f .env ]; then \
     echo "APP_NAME=ClassKira" > .env && \
     echo "APP_ENV=production" >> .env && \
@@ -59,21 +58,21 @@ RUN if [ ! -f .env ]; then \
     echo "QUEUE_CONNECTION=sync" >> .env; \
 fi
 
-# Install PHP dependencies (production only)
+# Install PHP dependencies.
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# Build frontend assets (Bootstrap 5 + Sass via Laravel Mix)
+# Build frontend assets.
 RUN if [ ! -f webpack.mix.js ]; then \
     echo "const mix = require('laravel-mix'); mix.js('resources/js/app.js', 'public/js').sass('resources/sass/app.scss', 'public/css').version();" > webpack.mix.js; \
 fi
 RUN npm install && npm run production && rm -rf node_modules
 
-# Set correct permissions
+# Set runtime permissions.
 RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Copy and configure entrypoint
+# Copy and configure entrypoint.
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh \
     && chmod +x /usr/local/bin/docker-entrypoint.sh
