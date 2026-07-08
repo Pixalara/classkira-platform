@@ -21,8 +21,7 @@ class CreateDailyAttendancesTable extends Migration
             $table->integer('status');
             $table->integer('session_id');
             $table->integer('school_id');
-            $table->integer('timestamp');
-            $table->timestamp();
+            $table->timestamps();
         });
     }
 

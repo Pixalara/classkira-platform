@@ -15,8 +15,8 @@ class GlobalSettingsTable extends Migration
     {
         Schema::create('global_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->nullable;
-            $table->longText('value')->nullable;
+            $table->string('key')->nullable();
+            $table->longText('value')->nullable();
         });
     }
 
